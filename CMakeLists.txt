@@ -34,17 +34,17 @@ target_compile_options(kv_warnings INTERFACE
     -Wall -Wextra -Wpedantic -Wshadow -Wconversion
 )
 
-add_library(kvcore src/core/unique_fd.cpp)
-target_include_directories(kvcore PUBLIC src)
+add_library(kvcore INTERFACE)
+target_include_directories(kvcore INTERFACE src)
 
 add_executable(kvserver src/kvserver/main.cpp)
-target_link_libraries(kvserver PRIVATE kv_warnings)
+target_link_libraries(kvserver PRIVATE kv_warnings kvcore)
 
 add_executable(kvbench src/kvbench/main.cpp)
-target_link_libraries(kvbench PRIVATE kv_warnings)
+target_link_libraries(kvbench PRIVATE kv_warnings kvcore)
 
 add_executable(kvtop src/kvtop/main.cpp)
-target_link_libraries(kvtop PRIVATE kv_warnings)
+target_link_libraries(kvtop PRIVATE kv_warnings kvcore)
 
 if(KV_BUILD_TESTS)
     enable_testing()
