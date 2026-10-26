@@ -24,3 +24,18 @@ Proper RAII for linux fds. The tiny-kv-server will be creating fds and the owner
 
 - explicit UniqueFd( int fd ) is important here so that fd isn't turned into a UniqueFd by accident, esentially creating a second owner of the same fd number. /
 - follow the rule of three
+
+**Commit:** 'listener socket ad error checking'
+#### What
+Add some error catching. And the ability to create a listening socket
+#### Why
+- using a template for sys::check() because not all syscalls return the same type. 
+- use sys::check() when making a syscall to package errno as an error
+- TCP: (SOCK_STREAM)
+    - if a packet is lost, the kernel notices and it gets resent
+    - bytes arrive in the same order they were sent in
+    - connection explicitly setup and closed on both ends
+    - if the server is being slow, the kernel will tell the client to slow in order to not buffer overflow
+- UDP (SOCK_DGRAM) is another network option, often used in games and market data feeds, because it is faster, butwith out any of the guarentees of TCP
+- a listening socket's job is to wait on a port for new clients
+- a connection socket (one per client) gets put in a queue on the listening socket and will give you a new fd where you can read client commands and write replies back to it.

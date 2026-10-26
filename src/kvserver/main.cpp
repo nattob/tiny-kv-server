@@ -1,18 +1,16 @@
-#include <iostream>
-#include <sys/socket.h>
+#include <print>
 
-#include "core/UniqueFd.h"
+#include "core/net.h"
 
 int main() 
 {
-    UniqueFd listener{::socket(AF_INET, SOCK_STREAM, 0)};
-    if (!listener.valid()) 
+    auto listener = net::make_listener( 6380 );
+
+    if ( !listener )
     {
-        std::cerr << "Failed to create socket\n";
+        std::println( stderr, "failed to listen: {}", listener.error().message() );
         return 1;
     }
-
-    ::listen(listener.get(), SOMAXCONN);
 
     return 0;
 }
